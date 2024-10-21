@@ -1,0 +1,48 @@
+<button 
+  class="action" 
+  data-action="show-occupied-area"
+>Show Occupied Area</button>
+<hr />
+
+<fieldset class="actions move" data-requires-selection>
+  <legend>Move Selection</legend>
+  <button class="action" data-action="move" data-direction="relative" data-step="1">+1</button>
+  <button class="action" data-action="move" data-direction="relative" data-step="2">+2</button>
+  <button class="action" data-action="move" data-direction="front">Front (top)</button>
+
+  <button class="action" data-action="move" data-direction="relative" data-step="-1">-1</button>
+  <button class="action" data-action="move" data-direction="relative" data-step="-2">-2</button>
+  <button class="action" data-action="move" data-direction="back">Back (bottom)</button>
+</fieldset>
+
+<style>
+  .actions.move {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: 4px;
+  }
+</style>
+
+<script>
+  const actionButtons = document.querySelectorAll('button.action')
+  for (const btn of actionButtons) {
+    btn.addEventListener('click', (evt) => {
+      const { dataset } = evt.target
+      parent.postMessage({ 
+        pluginMessage: { ...dataset }
+      }, '*')
+    })
+  }
+
+  // receiving messages from plugin
+  onmessage = (event) => {
+    let msg = event.data.pluginMessage
+
+    if (msg.type === 'selectionchange') {
+      //console.log('msg.count', msg.count)
+      for (const el of document.querySelectorAll('[data-requires-selection]')) {
+        el.disabled = !msg.count
+      }
+    }
+  }
+</script>
